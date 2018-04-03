@@ -187,7 +187,7 @@ public class webotp extends AppCompatActivity {
                     otpTextView.setText(otp);
                 } else {
 //                    Toast.makeText(getBaseContext(), "Authentication failed", Toast.LENGTH_LONG).show();
-                    String reason =root.getAsJsonObject().get("reason:").getAsString();
+                    String reason =root.getAsJsonObject().get("reason").getAsString();
                     System.out.println("This is the reason why it fails." +reason);
                     otpTextView.setText(reason);
                 }
