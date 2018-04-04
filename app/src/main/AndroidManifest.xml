@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.NFC" />
+
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -35,7 +37,17 @@
             android:label="@string/title_activity_webotp"
             android:theme="@style/AppTheme" />
         <activity android:name=".uploadPhoto" />
-        <activity android:name=".updateInfo"></activity>
+        <activity android:name=".updateInfo" />
+        <activity android:name=".usertoUserS" />
+        <activity android:name=".nfcBeam">
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="application/vnd.com.example.android.beam"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".usertoUserR" />
+        <activity android:name=".usertoDevice"></activity>
     </application>
 
 </manifest>

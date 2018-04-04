@@ -2,7 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
         <item
             android:id="@+id/user_user"
-            android:title="User to User"
+            android:title="User to User (Sender)"
+            android:icon="@drawable/ic_edit"
+            />
+        <item
+            android:id="@+id/user_user_r"
+            android:title="User to User (Receiver)"
             android:icon="@drawable/ic_edit"
             />
         <item

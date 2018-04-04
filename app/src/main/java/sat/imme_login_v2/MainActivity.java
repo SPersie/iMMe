@@ -77,10 +77,16 @@ public class MainActivity extends AppCompatActivity {
 
                 //TODO: implement the navigation drawer
                 if (item.getItemId() ==R.id.user_user) {
-
+                    Intent i0 =new Intent(MainActivity.this, usertoUserS.class);
+                    startActivity(i0);
+                }
+                else if (item.getItemId() ==R.id.user_user_r) {
+                    Intent i1 =new Intent(MainActivity.this, usertoUserR.class);
+                    startActivity(i1);
                 }
                 else if (item.getItemId() ==R.id.user_device) {
-
+                    Intent i2 =new Intent(MainActivity.this, usertoDevice.class);
+                    startActivity(i2);
                 }
                 else if (item.getItemId() ==R.id.web_otp) {
                     Intent i3 =new Intent(MainActivity.this, webotp.class);
