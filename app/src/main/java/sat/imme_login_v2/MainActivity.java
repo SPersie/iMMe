@@ -133,14 +133,4 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    public void to_device(View view) {
-        switch (view.getId()) {
-            case R.id.device_button:
-                Intent i =new Intent(MainActivity.this, sat.imme_login_v2.device.class);
-                startActivity(i);
-        }
-    }
-
-
 }

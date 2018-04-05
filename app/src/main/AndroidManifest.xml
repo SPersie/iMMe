@@ -67,7 +67,6 @@
         </activity>
         <activity android:name=".usertoDevice" />
         <activity android:name=".verifyAccount" />
-        <activity android:name=".device"></activity>
     </application>
 
 </manifest>
