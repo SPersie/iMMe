@@ -84,6 +84,10 @@ public class MainActivity extends AppCompatActivity {
                     Intent i1 =new Intent(MainActivity.this, usertoUserR.class);
                     startActivity(i1);
                 }
+                else if (item.getItemId() ==R.id.add_user_device) {
+                    Intent i1 =new Intent(MainActivity.this, AddDeviceActivity.class);
+                    startActivity(i1);
+                }
                 else if (item.getItemId() ==R.id.user_device) {
                     Intent i2 =new Intent(MainActivity.this, usertoDevice.class);
                     startActivity(i2);

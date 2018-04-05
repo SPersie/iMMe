@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#5fb0c9"
+    android:orientation="vertical"
+    tools:context="sat.imme_login_v2.AddDeviceActivity">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/fa_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
+
+
+    <EditText
+        android:id="@+id/deviceName"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:drawableTint="#5fb0c9"
+        android:singleLine="true"
+        android:hint="Device name" />
+
+    <EditText
+        android:id="@+id/deviceKey"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:drawableTint="#5fb0c9"
+        android:singleLine="true"
+        android:hint="A key that you like" />
+    <Button
+        android:id="@+id/buttonAddLocker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/deviceName"
+        android:text="Add Device"
+        android:onClick="addLocker"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/buttonAddLocker"
+        android:text="Devices"
+        android:textAlignment="center"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:drawSelectorOnTop="false"
+        />
+
+
+
+</LinearLayout>
