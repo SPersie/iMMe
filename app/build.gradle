@@ -30,8 +30,11 @@ android {
     }
 }
 
-dependencies {
+repositories {
+    mavenCentral()
+}
 
+dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -42,12 +45,19 @@ dependencies {
     compile 'com.google.firebase:firebase-auth:10.0.1'
     compile 'com.google.firebase:firebase-database:10.0.1'
     compile 'com.google.firebase:firebase-storage:10.0.1'
-
     testCompile 'junit:junit:4.12'
     compile 'org.apache.httpcomponents:httpcore:4.4.1'
     compile 'org.apache.httpcomponents:httpclient:4.5'
     compile 'com.google.code.gson:gson:2.8.2'
-
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestCompile 'com.android.support.test:runner:1.0.1'
+    androidTestCompile 'com.android.support.test:rules:1.0.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:3.0.1'
+    implementation files('/Users/study/Desktop/Java_lib/oath-master/oath-otp/target/oath-otp-0.0.1-SNAPSHOT-javadoc.jar')
+    implementation files('/Users/study/Desktop/Java_lib/oath-master/oath-otp/target/oath-otp-0.0.1-SNAPSHOT-sources.jar')
+    implementation files('/Users/study/Desktop/Java_lib/oath-master/oath-otp/target/oath-otp-0.0.1-SNAPSHOT.jar')
+    compile group: 'com.google.guava', name: 'guava', version: '23.5-android'
 }
 
 

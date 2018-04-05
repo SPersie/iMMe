@@ -1,5 +1,6 @@
 package sat.imme_login_v2;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -11,6 +12,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -20,6 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity {
     String TAG = "MainActivity";
     TextView uid;
+    Button device;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseUser user;
@@ -97,7 +101,8 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(i3);
                 }
                 else if (item.getItemId() ==R.id.verify_account) {
-
+                    Intent i4 =new Intent(MainActivity.this, verifyAccount.class);
+                    startActivity(i4);
                 }
                 else if (item.getItemId() ==R.id.upload_photo) {
                     Intent i5 =new Intent(MainActivity.this, uploadPhoto.class);
@@ -116,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
     }
 
     @Override
@@ -126,6 +132,14 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void to_device(View view) {
+        switch (view.getId()) {
+            case R.id.device_button:
+                Intent i =new Intent(MainActivity.this, sat.imme_login_v2.device.class);
+                startActivity(i);
+        }
     }
 
 
