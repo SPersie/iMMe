@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.NFC" />
 
-
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -38,16 +37,36 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".uploadPhoto" />
         <activity android:name=".updateInfo" />
-        <activity android:name=".usertoUserS" />
-        <activity android:name=".nfcBeam">
+        <activity android:name=".usertoUserS">
             <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="application/vnd.com.example.android.beam"/>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="application/user_to_user.beam" />
             </intent-filter>
         </activity>
-        <activity android:name=".usertoUserR" />
-        <activity android:name=".usertoDevice"></activity>
+        <activity android:name=".nfcBeam">
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="application/nfc.beam" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".AddDeviceActivity" />
+        <activity android:name=".usertoUserR">
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="application/user_to_user.beam" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".usertoDevice" />
+        <activity android:name=".verifyAccount" />
     </application>
 
 </manifest>

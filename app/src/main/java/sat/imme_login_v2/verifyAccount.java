@@ -13,9 +13,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -39,29 +37,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class usertoDevice extends AppCompatActivity {
-    private static final int CAMERA_REQUEST = 1888;
-    ImageView userPhoto;
-    TextView otpTextView;
-    EditText deviceId;
-    Button submit;
-    String imageString;
+public class verifyAccount extends AppCompatActivity {
     String idToken;
+    ImageView document;
+    ImageView recentimage;
+    ImageView[] images;
+    Button submitPhoto;
+    String photo1_String;
+    String photo2_String;
     FirebaseUser mUser;
-    usertodeviceModel usertodeviceModel;
-    boolean nfcsuccess =false;
-    String nfcotp;
+
+    verifyAccountModel verifyAccountModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_userto_device);
+        setContentView(R.layout.activity_verify_account);
 
-        userPhoto =findViewById(R.id.device_user_photo);
-        otpTextView =findViewById(R.id.device_otp);
-        deviceId =findViewById(R.id.device_deviceId);
-        submit =findViewById(R.id.getDeviceOtp);
-
+        images =new ImageView[]{document, recentimage};
+//        idToken =getIntent().getStringExtra("userID");
+        document =findViewById(R.id.verify_doc);
+        recentimage =findViewById(R.id.verify_image);
+        submitPhoto =findViewById(R.id.verify_submit);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         mUser.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
@@ -75,39 +72,60 @@ public class usertoDevice extends AppCompatActivity {
             }
         });
 
-        userPhoto.setOnClickListener(new View.OnClickListener() {
+        document.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                 cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                startActivityForResult(cameraIntent, 0);
             }
         });
 
-        //TODO: test connection
-        if (isConnected()) {
-            Toast.makeText(usertoDevice.this, "connected", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(usertoDevice.this, "not connected", Toast.LENGTH_LONG).show();
-        }
-    }
+        recentimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+                startActivityForResult(cameraIntent, 1);
+            }
+        });
 
+
+        //TODO: test connection
+//        if (isConnected()) {
+//            Toast.makeText(uploadPhoto.this, "connected", Toast.LENGTH_LONG).show();
+//        } else {
+//            Toast.makeText(uploadPhoto.this, "not connected", Toast.LENGTH_LONG).show();
+//        }
+
+    }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAMERA_REQUEST && resultCode == webotp.RESULT_OK) {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-            userPhoto.setImageBitmap(photo);
+        if (requestCode ==0) {
+            if (resultCode ==uploadPhoto.RESULT_OK) {
+                Bitmap photo =(Bitmap) data.getExtras().get("data");
+                document.setImageBitmap(photo);
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-            byte[] byteArray = byteArrayOutputStream .toByteArray();
-            imageString = Base64.encodeToString(byteArray, Base64.NO_WRAP);
-//            imageString =java.util.Base64.getEncoder().encodeToString(byteArray);
-//            System.out.println(imageString);
+                ByteArrayOutputStream byteArrayOutputStream =new ByteArrayOutputStream();
+                photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                byte[] byteArray =byteArrayOutputStream.toByteArray();
+                photo1_String =Base64.encodeToString(byteArray, Base64.NO_WRAP);
+            }
+        } else if (requestCode ==1) {
+            if (resultCode ==uploadPhoto.RESULT_OK) {
+                Bitmap photo =(Bitmap) data.getExtras().get("data");
+                recentimage.setImageBitmap(photo);
+
+                ByteArrayOutputStream byteArrayOutputStream =new ByteArrayOutputStream();
+                photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                byte[] byteArray =byteArrayOutputStream.toByteArray();
+                photo2_String =Base64.encodeToString(byteArray, Base64.NO_WRAP);
+            }
         }
     }
 
-    public String POST(String url, usertodeviceModel usertodeviceModel){
+
+    public String POST(String url, verifyAccountModel verifyAccountModel){
         InputStream inputStream = null;
         String result = "";
         try {
@@ -122,9 +140,9 @@ public class usertoDevice extends AppCompatActivity {
 
             // 3. build jsonObject
             JSONObject jsonObject = new JSONObject();
-            jsonObject.accumulate("idToken", usertodeviceModel.getIdToken());
-            jsonObject.accumulate("deviceId", usertodeviceModel.getDeviceId());
-            jsonObject.accumulate("image", usertodeviceModel.gemytImage());
+            jsonObject.accumulate("idToken", verifyAccountModel.getmyIdToken());
+            jsonObject.accumulate("image", verifyAccountModel.getmyImage());
+            jsonObject.accumulate("document", verifyAccountModel.getDocument());
 
             // 4. convert JSONObject to JSON to String
             json = jsonObject.toString();
@@ -150,26 +168,21 @@ public class usertoDevice extends AppCompatActivity {
             inputStream = httpResponse.getEntity().getContent();
 
             // 10. convert inputstream to string
-            System.out.println("Print our the inputStream");
-            System.out.println(inputStream);
             if(inputStream != null) {
                 result = convertInputStreamToString(inputStream);
 
-                //get the otp value from the response
+                //toast the reason if it fails
                 JsonElement root = new JsonParser().parse(result);
                 String success =root.getAsJsonObject().get("success").getAsString();
-                if (success.equals("true")) {
-                    String otp =root.getAsJsonObject().get("otp").getAsString();
-                    System.out.println(otp +"otp otp otp otp otp otp otp");
-                    nfcsuccess =true;
-                    nfcotp =otp;
-                    otpTextView.setText(otp);
 
+                System.out.println(success +"This is a response from the server");
+                System.out.println(root.getAsJsonObject().get("reason").getAsString() +"This is the reason why fail.");
+                if (success.equals("true")) {
+//                    String otp =root.getAsJsonObject().get("otp").getAsString();
+                    Toast.makeText(verifyAccount.this, "Your images have been uploaded.", Toast.LENGTH_LONG).show();
                 } else {
-//                    Toast.makeText(getBaseContext(), "Authentication failed", Toast.LENGTH_LONG).show();
                     String reason =root.getAsJsonObject().get("reason").getAsString();
-                    System.out.println("This is the reason why it fails." +reason);
-                    otpTextView.setText(reason);
+                    Toast.makeText(getBaseContext(), reason, Toast.LENGTH_LONG).show();
                 }
             }
             else
@@ -192,14 +205,14 @@ public class usertoDevice extends AppCompatActivity {
             return false;
     }
 
-    public void getDeviceOtp(View view) {
+    public void submit_Image(View view) {
         switch(view.getId()){
-            case R.id.getDeviceOtp:
+            case R.id.verify_submit:
                 if(!validate())
                     Toast.makeText(getBaseContext(), "Enter some data!", Toast.LENGTH_LONG).show();
                     // call AsynTask to perform network operation on separate thread
                 else
-                    new usertoDevice.HttpAsyncTask().execute("https://imme-195707.appspot.com/userDeviceAuth");
+                    new verifyAccount.HttpAsyncTask().execute("https://imme-195707.appspot.com/verification");
                 break;
         }
     }
@@ -208,11 +221,13 @@ public class usertoDevice extends AppCompatActivity {
         @Override
         protected String doInBackground(String... urls) {
 
-            usertodeviceModel = new usertodeviceModel();
-            usertodeviceModel.setIdToken(idToken);
-            usertodeviceModel.setDeviceId(deviceId.getText().toString());
-            usertodeviceModel.setmyImage(imageString);
-            return POST(urls[0],usertodeviceModel);
+            verifyAccountModel = new verifyAccountModel();
+            verifyAccountModel.setmyIdToken(idToken);
+            verifyAccountModel.setDocument(photo1_String);
+            verifyAccountModel.setmyImage(photo2_String);
+
+
+            return POST(urls[0],verifyAccountModel);
         }
         // onPostExecute displays the results of the AsyncTask.
         @Override
@@ -221,30 +236,17 @@ public class usertoDevice extends AppCompatActivity {
 //            Toast.makeText(getBaseContext(), webid.getText().toString(), Toast.LENGTH_LONG).show();
 //            Toast.makeText(getBaseContext(), imageString, Toast.LENGTH_LONG).show();
 
-//            Toast.makeText(getBaseContext(), "Data Sent!", Toast.LENGTH_LONG).show();
-            Toast.makeText(getBaseContext(),nfcotp, Toast.LENGTH_LONG).show();
-            while (!nfcsuccess) {
-
-            }
-            Intent nfc =new Intent(usertoDevice.this, nfcBeam.class);
-            nfc.putExtra("otp", nfcotp);
-            //to test nfc beam
-//            nfc.putExtra("otp", "56838563");
-            startActivity(nfc);
+            Toast.makeText(getBaseContext(), "Data Sent!", Toast.LENGTH_LONG).show();
         }
     }
-
-
-
-
 
     private boolean validate(){
         if(idToken.equals(""))
             return false;
-        else if(deviceId.getText().toString().equals(""))
+        else if(photo1_String.equals(""))
             return false;
-//        else if(imageString)
-//            return false;
+        else if(photo2_String.equals(""))
+            return false;
         else
             return true;
     }

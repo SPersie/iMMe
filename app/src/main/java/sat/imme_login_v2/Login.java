@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
@@ -67,12 +68,25 @@ public class Login extends AppCompatActivity {
     public void loginSignIn(View view) {
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
-
-        progressBar.setVisibility(View.VISIBLE);
+        boolean emptyfield = false;
 
         //reset errors
         emailEditText.setError(null);
         passwordEditText.setError(null);
+
+        //check for empty fields
+        if (email.isEmpty()) {
+            emailEditText.setError("Enter Email");
+            emptyfield = true;
+        }
+        if (password.isEmpty()) {
+            passwordEditText.setError("Enter Password");
+            emptyfield = true;
+        }
+        if (emptyfield) return;
+
+        progressBar.setVisibility(View.VISIBLE);
+
 
 
         mAuth.signInWithEmailAndPassword(email, password)
@@ -95,6 +109,10 @@ public class Login extends AppCompatActivity {
                             catch (FirebaseAuthInvalidCredentialsException e) {
                                 passwordEditText.setError("Wrong Password");
                             }
+                            catch (FirebaseNetworkException e) {
+                                Toast.makeText(Login.this, "No Internet Connection",
+                                        Toast.LENGTH_SHORT).show();
+                            }
                             catch (Exception e) {
                                 Log.w(Tag, "signInWithEmail:Failed. Unknown Exception");
                             }
@@ -106,6 +124,7 @@ public class Login extends AppCompatActivity {
                             progressBar.setVisibility(View.GONE);
                             Intent intent = new Intent(Login.this, MainActivity.class);
                             startActivity(intent);
+                            finish();
                         }
 
 
@@ -127,5 +146,10 @@ public class Login extends AppCompatActivity {
         Intent i = new Intent(this, PasswordReset.class);
         i.putExtra(EMAIL, emailEditText.getText().toString());
         startActivity(i);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }

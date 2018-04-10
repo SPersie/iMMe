@@ -1,20 +1,20 @@
 package sat.imme_login_v2;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Base64;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,34 +34,29 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
-public class usertoDevice extends AppCompatActivity {
-    private static final int CAMERA_REQUEST = 1888;
-    ImageView userPhoto;
-    TextView otpTextView;
-    EditText deviceId;
-    Button submit;
-    String imageString;
+public class AddDeviceActivity extends AppCompatActivity  {
+
     String idToken;
+    EditText deviceName;
+    TextView otpTextView;
+    AddDeviceModel addDeviceModel;
+    EditText key;
+    Button addLocker;
+    ListView list;
+    ArrayAdapter<String> adapter;
+    ArrayList<String> arrayList;
     FirebaseUser mUser;
-    usertodeviceModel usertodeviceModel;
-    boolean nfcsuccess =false;
-    String nfcotp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_userto_device);
-
-        userPhoto =findViewById(R.id.device_user_photo);
-        otpTextView =findViewById(R.id.device_otp);
-        deviceId =findViewById(R.id.device_deviceId);
-        submit =findViewById(R.id.getDeviceOtp);
-
+        setContentView(R.layout.activity_add_device);
+        //IdToken =getIntent().getStringExtra("userID");
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         mUser.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
@@ -75,39 +70,39 @@ public class usertoDevice extends AppCompatActivity {
             }
         });
 
-        userPhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST);
-            }
-        });
+        key = findViewById(R.id.deviceKey);
+        otpTextView =findViewById(R.id.otp);
+        deviceName =findViewById(R.id.deviceName);
+        addLocker =findViewById(R.id.buttonAddLocker);
+        list = findViewById(R.id.list);
+
+        edittextFilter(key);
+        edittextFilter(deviceName);
+
+        arrayList = new ArrayList<String>();
+
+        // Adapter: You need three parameters 'the context, id of the layout (it will be where the data is shown),
+        // and the array that contains the data
+        adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
+
+        // Here, you set the data in your ListView
+        list.setAdapter(adapter);
+
 
         //TODO: test connection
-        if (isConnected()) {
-            Toast.makeText(usertoDevice.this, "connected", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(usertoDevice.this, "not connected", Toast.LENGTH_LONG).show();
-        }
+//        if (isConnected()) {
+//            Toast.makeText(webotp.this, "connected", Toast.LENGTH_LONG).show();
+//        } else {
+//            Toast.makeText(webotp.this, "not connected", Toast.LENGTH_LONG).show();
+//        }
+
+
+
+
     }
 
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAMERA_REQUEST && resultCode == webotp.RESULT_OK) {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-            userPhoto.setImageBitmap(photo);
-
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-            byte[] byteArray = byteArrayOutputStream .toByteArray();
-            imageString = Base64.encodeToString(byteArray, Base64.NO_WRAP);
-//            imageString =java.util.Base64.getEncoder().encodeToString(byteArray);
-//            System.out.println(imageString);
-        }
-    }
-
-    public String POST(String url, usertodeviceModel usertodeviceModel){
+    public String POST(String url, AddDeviceModel AddDeviceModel){
         InputStream inputStream = null;
         String result = "";
         try {
@@ -122,9 +117,10 @@ public class usertoDevice extends AppCompatActivity {
 
             // 3. build jsonObject
             JSONObject jsonObject = new JSONObject();
-            jsonObject.accumulate("idToken", usertodeviceModel.getIdToken());
-            jsonObject.accumulate("deviceId", usertodeviceModel.getDeviceId());
-            jsonObject.accumulate("image", usertodeviceModel.gemytImage());
+            jsonObject.accumulate("idToken", AddDeviceModel.getIdToken());
+            jsonObject.accumulate("key", AddDeviceModel.getKey());
+            jsonObject.accumulate("deviceName", AddDeviceModel.getdeviceName());
+
 
             // 4. convert JSONObject to JSON to String
             json = jsonObject.toString();
@@ -150,8 +146,6 @@ public class usertoDevice extends AppCompatActivity {
             inputStream = httpResponse.getEntity().getContent();
 
             // 10. convert inputstream to string
-            System.out.println("Print our the inputStream");
-            System.out.println(inputStream);
             if(inputStream != null) {
                 result = convertInputStreamToString(inputStream);
 
@@ -159,17 +153,13 @@ public class usertoDevice extends AppCompatActivity {
                 JsonElement root = new JsonParser().parse(result);
                 String success =root.getAsJsonObject().get("success").getAsString();
                 if (success.equals("true")) {
-                    String otp =root.getAsJsonObject().get("otp").getAsString();
-                    System.out.println(otp +"otp otp otp otp otp otp otp");
-                    nfcsuccess =true;
-                    nfcotp =otp;
-                    otpTextView.setText(otp);
-
+                    String deviceId =root.getAsJsonObject().get("deviceId").getAsString();
+                    // this line adds the data of your EditText and puts in your array
+                    arrayList.add(deviceName.getText().toString()+" : "+ deviceId);
+                    // next thing you have to do is check if your adapter has changed
+                    adapter.notifyDataSetChanged();
                 } else {
-//                    Toast.makeText(getBaseContext(), "Authentication failed", Toast.LENGTH_LONG).show();
-                    String reason =root.getAsJsonObject().get("reason").getAsString();
-                    System.out.println("This is the reason why it fails." +reason);
-                    otpTextView.setText(reason);
+                    Toast.makeText(getBaseContext(), "Authentication failed", Toast.LENGTH_LONG).show();
                 }
             }
             else
@@ -192,14 +182,15 @@ public class usertoDevice extends AppCompatActivity {
             return false;
     }
 
-    public void getDeviceOtp(View view) {
+    public void addLocker(View view) {
         switch(view.getId()){
-            case R.id.getDeviceOtp:
+            case R.id.buttonAddLocker:
                 if(!validate())
                     Toast.makeText(getBaseContext(), "Enter some data!", Toast.LENGTH_LONG).show();
                     // call AsynTask to perform network operation on separate thread
                 else
-                    new usertoDevice.HttpAsyncTask().execute("https://imme-195707.appspot.com/userDeviceAuth");
+                    new AddDeviceActivity.HttpAsyncTask().execute("https://imme-195707.appspot.com/addDevice");
+
                 break;
         }
     }
@@ -208,43 +199,62 @@ public class usertoDevice extends AppCompatActivity {
         @Override
         protected String doInBackground(String... urls) {
 
-            usertodeviceModel = new usertodeviceModel();
-            usertodeviceModel.setIdToken(idToken);
-            usertodeviceModel.setDeviceId(deviceId.getText().toString());
-            usertodeviceModel.setmyImage(imageString);
-            return POST(urls[0],usertodeviceModel);
+            addDeviceModel = new AddDeviceModel();
+            addDeviceModel.setIdToken(idToken);
+            addDeviceModel.setKey(key.getText().toString());
+            addDeviceModel.setdeviceName(deviceName.getText().toString());
+
+
+            return POST(urls[0],addDeviceModel);
         }
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
 //            Toast.makeText(getBaseContext(), IdToken, Toast.LENGTH_LONG).show();
-//            Toast.makeText(getBaseContext(), webid.getText().toString(), Toast.LENGTH_LONG).show();
+//            Toast.makeText(getBaseContext(), deviceName.getText().toString(), Toast.LENGTH_LONG).show();
 //            Toast.makeText(getBaseContext(), imageString, Toast.LENGTH_LONG).show();
 
-//            Toast.makeText(getBaseContext(), "Data Sent!", Toast.LENGTH_LONG).show();
-            Toast.makeText(getBaseContext(),nfcotp, Toast.LENGTH_LONG).show();
-            while (!nfcsuccess) {
-
-            }
-            Intent nfc =new Intent(usertoDevice.this, nfcBeam.class);
-            nfc.putExtra("otp", nfcotp);
-            //to test nfc beam
-//            nfc.putExtra("otp", "56838563");
-            startActivity(nfc);
+            Toast.makeText(getBaseContext(), "Data Sent!", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void edittextFilter(final EditText edt) {
+        InputFilter[] filters = new InputFilter[1];
+        final int len = edt.getText().toString().length();
+        filters[0] = new InputFilter() {
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       Spanned dest, int dstart, int dend) {
+
+                try {
+                    char[] invaildInputs = new char[] { '.', ',', '#', '{',
+                            '}', '[', ']', '$', '@', '`' };
+                    for (int index = 0; index < end; index++) {
+                        if (new String(invaildInputs).contains(String
+                                .valueOf(source.charAt(index)))) {
+                            Toast.makeText(getBaseContext(), "Invalid input is removed.", Toast.LENGTH_LONG).show();
+                            return "";
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        edt.setFilters(filters);
     }
 
 
 
-
-
     private boolean validate(){
+        String deviceNameString = deviceName.getText().toString();
         if(idToken.equals(""))
             return false;
-        else if(deviceId.getText().toString().equals(""))
+        else if(deviceNameString.equals(""))
+            //||deviceNameString.contains(".")||deviceNameString.contains("#")||deviceNameString.contains(",")||deviceNameString.contains("#")
             return false;
-//        else if(imageString)
-//            return false;
+        else if(key.getText().toString().equals(""))
+            return false;
         else
             return true;
     }
