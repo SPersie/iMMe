@@ -6,7 +6,7 @@
 
 
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -30,7 +30,7 @@
                 android:layout_below="@+id/login_title"
                 android:layout_marginLeft="50dp"
                 android:layout_marginRight="50dp"
-                android:layout_marginTop="70dp"
+                android:layout_marginBottom="40dp"
                 android:background="#fff"
                 android:elevation="4dp"
                 android:orientation="vertical"
@@ -102,7 +102,7 @@
                     android:onClick="submit_Image"/>
             </RelativeLayout>
 
-        </RelativeLayout>
+        </LinearLayout>
 
 
 </ScrollView>
