@@ -3,10 +3,12 @@ package sat.imme_login_v2;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -15,6 +17,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,18 +43,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import static sat.imme_login_v2.signup.REQUEST_IMAGE_CAPTURE;
+
 public class usertoDevice extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1888;
     ImageView userPhoto;
     TextView otpTextView;
     EditText deviceId;
-    Button submit;
+    Button submit, beam;
     String imageString;
     String idToken;
     FirebaseUser mUser;
     usertodeviceModel usertodeviceModel;
-    boolean nfcsuccess =false;
     String nfcotp;
+    ProgressBar progressBar;
+    RelativeLayout userToDeviceLayout;
+    private String otpResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +69,9 @@ public class usertoDevice extends AppCompatActivity {
         otpTextView =findViewById(R.id.device_otp);
         deviceId =findViewById(R.id.device_deviceId);
         submit =findViewById(R.id.getDeviceOtp);
+        progressBar = findViewById(R.id.userDeviceProgress);
+        beam = findViewById(R.id.userDeviceBeam);
+        userToDeviceLayout = findViewById(R.id.userDeviceLayout);
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         mUser.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
@@ -78,9 +89,10 @@ public class usertoDevice extends AppCompatActivity {
         userPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                Intent takePictureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                }
             }
         });
 
@@ -94,10 +106,10 @@ public class usertoDevice extends AppCompatActivity {
 
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAMERA_REQUEST && resultCode == webotp.RESULT_OK) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == webotp.RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
+            Log.d("userToDevice", "Added Photo");
             userPhoto.setImageBitmap(photo);
-
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream .toByteArray();
@@ -150,30 +162,25 @@ public class usertoDevice extends AppCompatActivity {
             inputStream = httpResponse.getEntity().getContent();
 
             // 10. convert inputstream to string
-            System.out.println("Print our the inputStream");
-            System.out.println(inputStream);
-            if(inputStream != null) {
-                result = convertInputStreamToString(inputStream);
 
-                //get the otp value from the response
-                JsonElement root = new JsonParser().parse(result);
-                String success =root.getAsJsonObject().get("success").getAsString();
-                if (success.equals("true")) {
-                    String otp =root.getAsJsonObject().get("otp").getAsString();
-                    System.out.println(otp +"otp otp otp otp otp otp otp");
-                    nfcsuccess =true;
-                    nfcotp =otp;
-                    otpTextView.setText(otp);
-
-                } else {
-//                    Toast.makeText(getBaseContext(), "Authentication failed", Toast.LENGTH_LONG).show();
-                    String reason =root.getAsJsonObject().get("reason").getAsString();
-                    System.out.println("This is the reason why it fails." +reason);
-                    otpTextView.setText(reason);
-                }
+            if(inputStream == null) {
+                return "Failed: Unknown Error";
             }
-            else
-                result = "Did not work!";
+
+            result = convertInputStreamToString(inputStream);
+
+            //get the otp value from the response
+            JsonElement root = new JsonParser().parse(result);
+            String success =root.getAsJsonObject().get("success").getAsString();
+            if (success.equals("true")) {
+                String otp = root.getAsJsonObject().get("otp").getAsString();
+                Log.d("userToDevice", "Got OTP: " + otp);
+                return otp;
+
+            } else {
+                return "Failed: " + root.getAsJsonObject().get("reason").getAsString();
+            }
+
 
         } catch (Exception e) {
             Log.d("InputStream", e.getLocalizedMessage());
@@ -198,10 +205,18 @@ public class usertoDevice extends AppCompatActivity {
                 if(!validate())
                     Toast.makeText(getBaseContext(), "Enter some data!", Toast.LENGTH_LONG).show();
                     // call AsynTask to perform network operation on separate thread
-                else
+                else{
+                    progressBar.setVisibility(View.VISIBLE);
                     new usertoDevice.HttpAsyncTask().execute("https://imme-195707.appspot.com/userDeviceAuth");
+                }
                 break;
         }
+    }
+
+    public void userDeviceNFC(View view) {
+        Intent nfc =new Intent(usertoDevice.this, nfcBeam.class);
+        nfc.putExtra("otp", nfcotp);
+        startActivity(nfc);
     }
 
     private class HttpAsyncTask extends AsyncTask<String, Void, String> {
@@ -217,19 +232,22 @@ public class usertoDevice extends AppCompatActivity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-//            Toast.makeText(getBaseContext(), IdToken, Toast.LENGTH_LONG).show();
-//            Toast.makeText(getBaseContext(), webid.getText().toString(), Toast.LENGTH_LONG).show();
-//            Toast.makeText(getBaseContext(), imageString, Toast.LENGTH_LONG).show();
-
-            Toast.makeText(getBaseContext(), "Data Sent!", Toast.LENGTH_LONG).show();
-            while (!nfcsuccess) {
-
+            Log.d("userDevice", "onPostExecute " + result);
+            if (result.contains("Failed")) {
+                Snackbar.make(userToDeviceLayout, result, Snackbar.LENGTH_LONG);
+                otpTextView.setText(result);
+                beam.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
+                otpTextView.setTextColor(Color.RED);
             }
-            Intent nfc =new Intent(usertoDevice.this, nfcBeam.class);
-            nfc.putExtra("otp", nfcotp);
-            //to test nfc beam
-//            nfc.putExtra("otp", "56838563");
-            startActivity(nfc);
+            else {
+                beam.setVisibility(View.VISIBLE);
+                nfcotp = result;
+                otpTextView.setText(result);
+                progressBar.setVisibility(View.GONE);
+                otpTextView.setTextColor(Color.BLACK);
+            }
+
         }
     }
 
