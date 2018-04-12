@@ -16,14 +16,12 @@
         android:background="?attr/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
-
-
     <TextView
         android:layout_below="@id/fa_toolbar"
         android:id="@+id/fa_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="10dp"
         android:layout_marginTop="22dp"
         android:gravity="center_horizontal"
         android:text="User Device (NFC)"
@@ -31,6 +29,15 @@
         android:textSize="26sp"
         android:textStyle="bold" />
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:layout_below="@id/fa_title"
+        android:layout_centerHorizontal="true"
+        android:padding="15dp"
+        android:orientation="vertical"
+        android:elevation="4dp">
 
         <ImageView
             android:id="@+id/device_user_photo"
@@ -39,8 +46,7 @@
             android:scaleType="centerCrop"
             android:layout_gravity="center"
             android:layout_centerHorizontal="true"
-            app:srcCompat="@drawable/add_sign"
-            android:layout_below="@id/fa_title"/>
+            app:srcCompat="@drawable/add_sign" />
         <TextView
             android:layout_centerHorizontal="true"
             android:id="@+id/device_otp"
@@ -48,13 +54,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:textSize="26dp"
+            android:textSize="20dp"
             android:layout_below="@id/device_user_photo"/>
 
 
         <EditText
             android:id="@+id/device_deviceId"
-            android:layout_margin="10dp"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/device_otp"
@@ -77,16 +82,22 @@
             android:textStyle="bold"
             android:layout_below="@id/device_deviceId"/>
 
-    <Button
-        android:id="@+id/userDeviceBeam"
-        android:text="Beam OTP"
-        android:visibility="gone"
-        android:onClick="userDeviceNFC"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/device_deviceId"
-        android:layout_marginStart="25dp"
-        android:layout_toEndOf="@+id/getDeviceOtp" />
+        <Button
+            android:id="@+id/userDeviceBeam"
+            android:text="Beam OTP"
+            android:visibility="gone"
+            android:onClick="userDeviceNFC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/device_deviceId"
+            android:layout_marginStart="25dp"
+            android:layout_toEndOf="@+id/getDeviceOtp" />
+
+
+    </RelativeLayout>
+
+
+
 
 
     <ProgressBar
