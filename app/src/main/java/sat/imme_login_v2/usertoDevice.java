@@ -111,7 +111,7 @@ public class usertoDevice extends AppCompatActivity {
             Log.d("userToDevice", "Added Photo");
             userPhoto.setImageBitmap(photo);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            photo.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream .toByteArray();
             imageString = Base64.encodeToString(byteArray, Base64.NO_WRAP);
 //            imageString =java.util.Base64.getEncoder().encodeToString(byteArray);
