@@ -6,9 +6,15 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcEvent;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -41,18 +47,23 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
-public class usertoUserS extends AppCompatActivity {
+public class usertoUserS extends AppCompatActivity implements NfcAdapter.CreateNdefMessageCallback,
+        NfcAdapter.OnNdefPushCompleteCallback {
+    NfcAdapter mNfcAdapter;
+    private static final int MESSAGE_SENT = 1;
+    private String Key;
     private static final int CAMERA_REQUEST = 1888;
     ImageView userPhoto;
     TextView otpTextView;
     EditText nric;
-    Button submit, beam;
+    Button submit;
     String imageString;
     String idToken;
-    String nfcotp;
     FirebaseUser mUser;
     usertouserModel usertouserModel;
+    String nfcotp;
     ProgressBar progressBar;
 
     @Override
@@ -60,12 +71,11 @@ public class usertoUserS extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_userto_user_s);
 
+        progressBar = findViewById(R.id.userUserSendProgressBar);
         otpTextView =findViewById(R.id.contact_otp);
         nric =findViewById(R.id.contact_NRIC);
         userPhoto =findViewById(R.id.contact_user_photo);
         submit =findViewById(R.id.contact_submit_button);
-        beam = findViewById(R.id.contact_nfc_button);
-        progressBar = findViewById(R.id.userUserSendProgressBar);
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         mUser.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
@@ -95,9 +105,89 @@ public class usertoUserS extends AppCompatActivity {
         } else {
             Toast.makeText(usertoUserS.this, "not connected", Toast.LENGTH_LONG).show();
         }
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mNfcAdapter == null) {
+            otpTextView.setText("NFC is not available on this device.");
+        }
+        // Register callback to set NDEF message
+        mNfcAdapter.setNdefPushMessageCallback(this, this);
+        // Register callback to listen for message-sent success
+        mNfcAdapter.setOnNdefPushCompleteCallback(this, this);
+    }
+
+    /**
+     * Implementation for the CreateNdefMessageCallback interface
+     */
+    @Override
+    public NdefMessage createNdefMessage(NfcEvent event) {
+        Key = nfcotp;
+        NdefMessage msg = new NdefMessage(
+                new NdefRecord[] { createMimeRecord(
+                        "application/user_to_user.beam", Key.getBytes())
+
+                });
+        return msg;
+    }
+
+    /**
+     * Implementation for the OnNdefPushCompleteCallback interface
+     */
+    @Override
+    public void onNdefPushComplete(NfcEvent arg0) {
+        // A handler is needed to send messages to the activity when this
+        // callback occurs, because it happens from a binder thread
+        mHandler.obtainMessage(MESSAGE_SENT).sendToTarget();
+    }
+
+    /** This handler receives a message from onNdefPushComplete */
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_SENT:
+                    Toast.makeText(getApplicationContext(), "Key sent!", Toast.LENGTH_LONG).show();
+                    break;
+            }
+        }
+    };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Check to see that the Activity started due to an Android Beam
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+            processIntent(getIntent());
+        }
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        // onResume gets called after this to handle the intent
+        setIntent(intent);
     }
 
 
+    void processIntent(Intent intent) {
+        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(
+                NfcAdapter.EXTRA_NDEF_MESSAGES);
+        // only one message sent during the beam
+        NdefMessage msg = (NdefMessage) rawMsgs[0];
+        // record 0 contains the MIME type
+        String mKey = new String(msg.getRecords()[0].getPayload());
+        if (mKey.equals("")){
+            otpTextView.setText("OTP is sent!");
+        }else{
+            otpTextView.setText("OTP is not sent!");
+        }
+    }
+
+
+    public NdefRecord createMimeRecord(String mimeType, byte[] payload) {
+        byte[] mimeBytes = mimeType.getBytes(Charset.forName("US-ASCII"));
+        NdefRecord mimeRecord = new NdefRecord(
+                NdefRecord.TNF_MIME_MEDIA, mimeBytes, new byte[0], payload);
+        return mimeRecord;
+    }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_REQUEST && resultCode == webotp.RESULT_OK) {
@@ -105,7 +195,7 @@ public class usertoUserS extends AppCompatActivity {
             userPhoto.setImageBitmap(photo);
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            photo.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+            photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream .toByteArray();
             imageString = Base64.encodeToString(byteArray, Base64.NO_WRAP);
 //            imageString =java.util.Base64.getEncoder().encodeToString(byteArray);
@@ -156,6 +246,8 @@ public class usertoUserS extends AppCompatActivity {
             inputStream = httpResponse.getEntity().getContent();
 
             // 10. convert inputstream to string
+            System.out.println("Print out the inputStream");
+            System.out.println(inputStream);
             if(inputStream == null) {
                 return "Failed: Unknown Error";
             }
@@ -166,7 +258,7 @@ public class usertoUserS extends AppCompatActivity {
             String success =root.getAsJsonObject().get("success").getAsString();
             if (success.equals("true")) {
                 String otp =root.getAsJsonObject().get("otp").getAsString();
-                Log.d("userToUserSender", "Got OTP: " + otp);
+                Log.d("userToUserR", "Got OTP: " + otp);
                 return otp;
             } else {
                 return "Failed: " + root.getAsJsonObject().get("reason").getAsString();
@@ -188,22 +280,17 @@ public class usertoUserS extends AppCompatActivity {
             return false;
     }
 
-    public void contact_beamOTP(View view) {
-        Log.d("usertoUserS", "Beaming NFC " + nfcotp);
-        Intent nfc =new Intent(usertoUserS.this, nfcBeam.class);
-        nfc.putExtra("otp", nfcotp);
-        startActivity(nfc);
-    }
-
     public void contact_submitJson(View view) {
         switch(view.getId()){
             case R.id.contact_submit_button:
-                progressBar.setVisibility(View.VISIBLE);
                 if(!validate())
+
                     Toast.makeText(getBaseContext(), "Enter some data!", Toast.LENGTH_LONG).show();
                     // call AsynTask to perform network operation on separate thread
-                else
+                else {
+                    progressBar.setVisibility(View.VISIBLE);
                     new usertoUserS.HttpAsyncTask().execute("https://imme-195707.appspot.com/userUserAuth");
+                }
                 break;
         }
     }
@@ -221,16 +308,14 @@ public class usertoUserS extends AppCompatActivity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            Log.d("usertoUserS", "onPostExecute " + result);
+//           Log.d("usertoUserR", "onPostExecute " + result);
             otpTextView.setVisibility(View.VISIBLE);
             if (result.contains("Failed")) {
                 otpTextView.setText(result);
-                beam.setVisibility(View.GONE);
                 progressBar.setVisibility(View.GONE);
                 otpTextView.setTextColor(Color.RED);
             }
             else {
-                beam.setVisibility(View.VISIBLE);
                 nfcotp = result;
                 otpTextView.setText(result);
                 progressBar.setVisibility(View.GONE);

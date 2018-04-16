@@ -54,9 +54,6 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.2'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
     androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
-    implementation files('/Users/study/Desktop/Java_lib/oath-master/oath-otp/target/oath-otp-0.0.1-SNAPSHOT-javadoc.jar')
-    implementation files('/Users/study/Desktop/Java_lib/oath-master/oath-otp/target/oath-otp-0.0.1-SNAPSHOT-sources.jar')
-    implementation files('/Users/study/Desktop/Java_lib/oath-master/oath-otp/target/oath-otp-0.0.1-SNAPSHOT.jar')
     compile group: 'com.google.guava', name: 'guava', version: '23.5-android'
 }
 

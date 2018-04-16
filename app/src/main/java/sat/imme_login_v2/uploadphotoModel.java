@@ -5,6 +5,8 @@ public class uploadphotoModel {
     private String photo1;
     private String photo2;
     private String photo3;
+    private String photo4;
+    private String photo5;
 
     public String getIdToken() {
         return idToken;
@@ -20,6 +22,22 @@ public class uploadphotoModel {
 
     public String getPhoto3() {
         return photo3;
+    }
+
+    public String getPhoto4() {
+        return photo4;
+    }
+
+    public void setPhoto4(String photo4) {
+        this.photo4 = photo4;
+    }
+
+    public String getPhoto5() {
+        return photo5;
+    }
+
+    public void setPhoto5(String photo5) {
+        this.photo5 = photo5;
     }
 
     public void setIdToken(String idToken) {

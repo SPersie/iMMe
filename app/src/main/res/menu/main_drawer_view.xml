@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-        <group android:checkableBehavior="none" >
+        <group android:checkableBehavior="none">
                 <item
                     android:id="@+id/user_user"
                     android:title="User to User (Sender)"
@@ -16,6 +16,12 @@
                     android:id="@+id/user_device"
                     android:title="User to Device"
                     android:icon="@drawable/ic_nfc_black_24dp"
+                    />
+
+                <item
+                    android:id="@+id/add_user_device"
+                    android:title="Add Device"
+                    android:icon="@drawable/ic_add_to_queue_black_24dp"
                     />
                 <item
                     android:id="@+id/web_otp"

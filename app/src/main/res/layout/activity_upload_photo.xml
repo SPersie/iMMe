@@ -1,8 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:orientation="vertical"
     android:background="#5fb0c9">
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:elevation="10dp"
+        android:visibility="gone"
+        android:id="@+id/upload_photo_progress_bar"/>
+
+
+
+
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
 
 
@@ -11,6 +29,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:scrollbarAlwaysDrawVerticalTrack="true">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/fa_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
             <TextView
                 android:layout_below="@id/toolbar"
@@ -90,12 +115,50 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/add_sign"/>
 
+                <TextView
+                    android:id="@+id/text_pic4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Picture 4"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:layout_below="@+id/photo_3"
+                    android:layout_marginTop="10dp"/>
+
+                <ImageView
+                    android:id="@+id/photo_4"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
+                    android:layout_below="@+id/text_pic4"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/add_sign"/>
+
+                <TextView
+                    android:id="@+id/text_pic5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Picture 5"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:layout_below="@+id/photo_4"
+                    android:layout_marginTop="10dp"/>
+
+                <ImageView
+                    android:id="@+id/photo_5"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
+                    android:layout_below="@+id/text_pic5"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/add_sign"/>
+
                 <Button
                     android:layout_marginTop="10dp"
                     android:id="@+id/photo_submit_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/photo_3"
+                    android:background="?attr/colorPrimary"
+                    android:textColor="#FFF"
+                    android:layout_below="@+id/photo_5"
                     android:layout_centerHorizontal="true"
                     android:text="Submit"
                     android:textStyle="bold"
@@ -104,6 +167,12 @@
 
         </LinearLayout>
 
+    </ScrollView>
 
 
-</ScrollView>
+
+
+
+
+
+</RelativeLayout>
