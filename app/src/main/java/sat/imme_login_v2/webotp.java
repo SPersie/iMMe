@@ -3,6 +3,7 @@ package sat.imme_login_v2;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
@@ -58,11 +60,11 @@ public class webotp extends AppCompatActivity {
     ImageView userPhoto;
     TextView otpTextView;
     EditText webid;
-    Button capture;
     Button submit;
     String imageString;
     String IdToken;
     FirebaseUser mUser;
+    ProgressBar progressBar;
 
     twofaModel twofamodel;
 
@@ -76,9 +78,9 @@ public class webotp extends AppCompatActivity {
         otpTextView =findViewById(R.id.otp);
         webid =findViewById(R.id.web_id);
         userPhoto =findViewById(R.id.user_photo);
-        capture =findViewById(R.id.capture_button);
         submit =findViewById(R.id.submit_button);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
+        progressBar = findViewById(R.id.webOTPProgressBar);
 
 //        Bitmap bm = BitmapFactory.decodeFile("/drawable/add_sign.png");
 //        ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -98,21 +100,18 @@ public class webotp extends AppCompatActivity {
             }
         });
 
-        capture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST);
-            }
-        });
-
         //TODO: test connection
         if (isConnected()) {
             Toast.makeText(webotp.this, "connected", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(webotp.this, "not connected", Toast.LENGTH_LONG).show();
         }
+    }
+
+    protected void webotpcapture(View view) {
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -175,25 +174,21 @@ public class webotp extends AppCompatActivity {
             // 10. convert inputstream to string
             System.out.println("Print our the inputStream");
             System.out.println(inputStream);
-            if(inputStream != null) {
-                result = convertInputStreamToString(inputStream);
-
-                //get the otp value from the response
-                JsonElement root = new JsonParser().parse(result);
-                String success =root.getAsJsonObject().get("success").getAsString();
-                if (success.equals("true")) {
-                    String otp =root.getAsJsonObject().get("otp").getAsString();
-                    otpTextView.setText(otp);
-                } else {
-//                    Toast.makeText(getBaseContext(), "Authentication failed", Toast.LENGTH_LONG).show();
-                    String reason =root.getAsJsonObject().get("reason").getAsString();
-                    System.out.println("This is the reason why it fails." +reason);
-                    otpTextView.setText(reason);
-                }
+            if(inputStream == null) {
+                return "Failed: Unknown Error";
             }
-            else
-                result = "Did not work!";
+            result = convertInputStreamToString(inputStream);
 
+            //get the otp value from the response
+            JsonElement root = new JsonParser().parse(result);
+            String success =root.getAsJsonObject().get("success").getAsString();
+            if (success.equals("true")) {
+                String otp =root.getAsJsonObject().get("otp").getAsString();
+                Log.d("webOTP", "Got OTP: " + otp);
+                return otp;
+            } else {
+                return "Failed: " + root.getAsJsonObject().get("reason").getAsString();
+            }
         } catch (Exception e) {
             Log.d("InputStream", e.getLocalizedMessage());
         }
@@ -217,8 +212,10 @@ public class webotp extends AppCompatActivity {
                 if(!validate())
                     Toast.makeText(getBaseContext(), "Enter some data!", Toast.LENGTH_LONG).show();
                 // call AsynTask to perform network operation on separate thread
-                else
+                else {
+                    progressBar.setVisibility(View.VISIBLE);
                     new HttpAsyncTask().execute("https://imme-195707.appspot.com/twoFA");
+                }
                 break;
         }
     }
@@ -237,11 +234,18 @@ public class webotp extends AppCompatActivity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-//            Toast.makeText(getBaseContext(), IdToken, Toast.LENGTH_LONG).show();
-//            Toast.makeText(getBaseContext(), webid.getText().toString(), Toast.LENGTH_LONG).show();
-//            Toast.makeText(getBaseContext(), imageString, Toast.LENGTH_LONG).show();
-
-            Toast.makeText(getBaseContext(), "Data Sent!", Toast.LENGTH_LONG).show();
+//            Log.d("usertoUserS", "onPostExecute " + result);
+            otpTextView.setVisibility(View.VISIBLE);
+            if (result.contains("Failed")) {
+                otpTextView.setText(result);
+                progressBar.setVisibility(View.GONE);
+                otpTextView.setTextColor(Color.RED);
+            }
+            else {
+                otpTextView.setText(result);
+                progressBar.setVisibility(View.GONE);
+                otpTextView.setTextColor(Color.BLACK);
+            }
         }
     }
 

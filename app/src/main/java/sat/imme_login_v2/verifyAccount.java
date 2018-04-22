@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -48,12 +49,15 @@ public class verifyAccount extends AppCompatActivity {
     FirebaseUser mUser;
 
     verifyAccountModel verifyAccountModel;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verify_account);
 
+
+        progressBar = findViewById(R.id.verify_account_ProgressBar);
         images =new ImageView[]{document, recentimage};
 //        idToken =getIntent().getStringExtra("userID");
         document =findViewById(R.id.verify_doc);
@@ -211,8 +215,10 @@ public class verifyAccount extends AppCompatActivity {
                 if(!validate())
                     Toast.makeText(getBaseContext(), "Enter some data!", Toast.LENGTH_LONG).show();
                     // call AsynTask to perform network operation on separate thread
-                else
+                else{
+                    progressBar.setVisibility(View.VISIBLE);
                     new verifyAccount.HttpAsyncTask().execute("https://imme-195707.appspot.com/verification");
+                }
                 break;
         }
     }
@@ -235,8 +241,9 @@ public class verifyAccount extends AppCompatActivity {
 //            Toast.makeText(getBaseContext(), IdToken, Toast.LENGTH_LONG).show();
 //            Toast.makeText(getBaseContext(), webid.getText().toString(), Toast.LENGTH_LONG).show();
 //            Toast.makeText(getBaseContext(), imageString, Toast.LENGTH_LONG).show();
+            progressBar.setVisibility(View.GONE);
 
-            Toast.makeText(getBaseContext(), "Data Sent!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "Request Sent!", Toast.LENGTH_LONG).show();
         }
     }
 

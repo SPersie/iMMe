@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -24,49 +24,82 @@
         android:text="User to User (Sender)"
         android:textColor="#fff"
         android:textSize="26sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_below="@+id/fa_toolbar"/>
 
-
-    <ImageView
-        android:id="@+id/contact_user_photo"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:scaleType="centerCrop"
-        android:layout_gravity="center"
-        android:layout_centerInParent="true"
-        app:srcCompat="@drawable/add_sign" />
-
-
-    <EditText
-        android:id="@+id/contact_NRIC"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/relativeLayout"
-        android:layout_centerHorizontal="true"
-        android:hint="NRIC of Receiver"
-        android:layout_gravity="center"
-        android:layout_centerInParent="true"
-        android:textSize="20dp" />
-
-    <TextView
-        android:id="@+id/contact_otp"
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="51dp"
-        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_centerHorizontal="true"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:text="Waiting for verification..."
-        android:textSize="26dp" />
+        android:id="@+id/userUserRelativeLayout"
+        android:layout_below="@id/fa_title"
+        android:background="#FFF"
+        android:padding="15dp"
+        android:elevation="4dp">
 
-    <Button
-        android:id="@+id/contact_submit_button"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:onClick="contact_submitJson"
-        android:text="Submit"
-        android:textStyle="bold" />
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/contact_user_photo"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
+            app:srcCompat="@drawable/add_sign" />
+
+        <TextView
+            android:id="@+id/contact_otp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:layout_margin="10dp"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:textSize="20dp"
+            android:layout_below="@+id/contact_user_photo" />
+
+        <EditText
+            android:id="@+id/contact_NRIC"
+            android:layout_margin="10dp"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/contact_otp"
+            android:layout_centerHorizontal="true"
+            android:hint="NRIC of Receiver"
+            android:layout_gravity="center"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/contact_submit_button"
+            android:layout_below="@id/contact_NRIC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:textColor="#FFF"
+            android:layout_gravity="center"
+            android:onClick="contact_submitJson"
+            android:layout_centerHorizontal="true"
+            android:text="Submit"
+            android:textStyle="bold" />
+
+
+    </RelativeLayout>
+
+
+
+
+
+
+
+
+    <ProgressBar
+        android:id="@+id/userUserSendProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:elevation="10dp"
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
+
+</RelativeLayout>

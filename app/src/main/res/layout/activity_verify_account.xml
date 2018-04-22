@@ -1,90 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#5fb0c9">
 
 
-
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
+    <ProgressBar
+        android:id="@+id/verify_account_ProgressBar"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:scrollbarAlwaysDrawVerticalTrack="true">
+        android:layout_centerHorizontal="true"
+        android:elevation="10dp"
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
 
-        <TextView
-            android:layout_below="@id/toolbar"
-            android:id="@+id/login_title"
-            android:layout_width="fill_parent"
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="22dp"
-            android:gravity="center_horizontal"
-            android:text="Verify Account"
-            android:textColor="#fff"
-            android:textSize="26sp"
-            android:textStyle="bold" />
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/login_title"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
-            android:layout_marginTop="70dp"
-            android:background="#fff"
-            android:elevation="4dp"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:scrollbarAlwaysDrawVerticalTrack="true">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
+
+
 
             <TextView
-                android:id="@+id/mainuid"
-                android:layout_width="match_parent"
+                android:layout_below="@id/toolbar"
+                android:id="@+id/login_title"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Document Photo"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textStyle="bold"/>
-
-            <ImageView
-                android:layout_marginTop="10dp"
-                android:id="@+id/verify_doc"
-                android:layout_width="250dp"
-                android:layout_height="250dp"
-                android:layout_below="@+id/mainuid"
-                android:scaleType="centerCrop"
-                android:src="@drawable/add_sign" />
-
-            <TextView
-                android:id="@+id/text_pic2"
-                android:layout_width="match_parent"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="22dp"
+                android:gravity="center_horizontal"
+                android:text="Verify Account"
+                android:textColor="#fff"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+            <RelativeLayout
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Recent Photo"
-                android:gravity="center"
-                android:textStyle="bold"
-                android:layout_below="@+id/verify_doc"
-                android:layout_marginTop="10dp"/>
+                android:layout_below="@+id/login_title"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="50dp"
+                android:layout_marginBottom="30dp"
+                android:background="#fff"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:padding="20dp">
 
-            <ImageView
-                android:id="@+id/verify_image"
-                android:layout_width="250dp"
-                android:layout_height="250dp"
-                android:layout_below="@+id/text_pic2"
-                android:scaleType="centerCrop"
-                android:src="@drawable/add_sign"/>
+                <TextView
+                    android:id="@+id/mainuid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Document Photo"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textStyle="bold"/>
 
-            <Button
-                android:layout_marginTop="10dp"
-                android:id="@+id/verify_submit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/verify_image"
-                android:layout_centerHorizontal="true"
-                android:text="Submit"
-                android:textStyle="bold"
-                android:onClick="submit_Image"/>
+                <ImageView
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/verify_doc"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
+                    android:layout_below="@+id/mainuid"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/add_sign" />
+
+                <TextView
+                    android:id="@+id/text_pic2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Recent Photo"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:layout_below="@+id/verify_doc"
+                    android:layout_marginTop="10dp"/>
+
+                <ImageView
+                    android:id="@+id/verify_image"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
+                    android:layout_below="@+id/text_pic2"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/add_sign"/>
+
+                <Button
+                    android:id="@+id/verify_submit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/verify_image"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:background="?attr/colorPrimary"
+                    android:onClick="submit_Image"
+                    android:text="Verify"
+                    android:textColor="#FFF"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
         </RelativeLayout>
 
-    </RelativeLayout>
+    </ScrollView>
 
 
-</ScrollView>
+
+
+
+
+</RelativeLayout>
+

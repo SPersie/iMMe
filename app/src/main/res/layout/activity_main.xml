@@ -34,6 +34,16 @@
             android:textColor="#fff"
             android:textSize="26sp"
             android:textStyle="bold" />
+        <TextView
+            android:layout_below="@id/login_title"
+            android:id="@+id/login_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textColor="#fff"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
         <RelativeLayout
             android:id="@+id/uid"
             android:layout_width="fill_parent"

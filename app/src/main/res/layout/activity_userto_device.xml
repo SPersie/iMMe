@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/userDeviceLayout"
     android:background="#5fb0c9"
     android:orientation="vertical"
     tools:context="sat.imme_login_v2.usertoDevice">
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/fa_toolbar"
         android:layout_width="match_parent"
@@ -15,13 +17,22 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
 
+    <ProgressBar
+        android:id="@+id/userDeviceProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
+
 
     <TextView
         android:layout_below="@id/fa_toolbar"
         android:id="@+id/fa_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="10dp"
         android:layout_marginTop="22dp"
         android:gravity="center_horizontal"
         android:text="User Device (NFC)"
@@ -29,49 +40,87 @@
         android:textSize="26sp"
         android:textStyle="bold" />
 
-
-    <ImageView
-        android:id="@+id/device_user_photo"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:scaleType="centerCrop"
-        android:layout_gravity="center"
-        android:layout_centerInParent="true"
-        app:srcCompat="@drawable/add_sign" />
-
-
-    <EditText
-        android:id="@+id/device_deviceId"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/relativeLayout"
-        android:layout_centerHorizontal="true"
-        android:hint="Device ID"
-        android:layout_gravity="center"
-        android:layout_centerInParent="true"
-        android:textSize="26dp" />
-
-    <TextView
-        android:id="@+id/device_otp"
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="51dp"
-        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:layout_below="@id/fa_title"
         android:layout_centerHorizontal="true"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:text="Waiting for verification..."
-        android:textSize="26dp" />
+        android:padding="15dp"
+        android:orientation="vertical"
+        android:elevation="4dp">
 
-    <Button
-        android:id="@+id/getDeviceOtp"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:onClick="getDeviceOtp"
-        android:text="Submit"
-        android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/device_user_photo"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
+            app:srcCompat="@drawable/add_sign" />
+        <TextView
+            android:layout_centerHorizontal="true"
+            android:id="@+id/device_otp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:textSize="20dp"
+            android:layout_below="@id/device_user_photo"/>
+
+
+        <EditText
+            android:id="@+id/device_deviceId"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/device_otp"
+            android:layout_centerHorizontal="true"
+            android:hint="Device ID"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:textSize="20dp" />
 
 
 
-</LinearLayout>
+        <Button
+            android:id="@+id/getDeviceOtp"
+            android:layout_width="wrap_content"
+            android:textColor="#FFF"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:onClick="getDeviceOtp"
+            android:text="Submit"
+            android:textStyle="bold"
+            android:layout_below="@id/device_deviceId"/>
+
+        <Button
+            android:id="@+id/userDeviceBeam"
+            android:background="?attr/colorPrimary"
+            android:textColor="#FFF"
+            android:text="BEAM"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:onClick="userDeviceNFC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/device_deviceId"
+            android:layout_toEndOf="@+id/getDeviceOtp" />
+
+
+    </RelativeLayout>
+
+
+
+
+
+
+
+
+
+
+
+
+</RelativeLayout>

@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,11 +65,14 @@ public class usertoUserS extends AppCompatActivity implements NfcAdapter.CreateN
     usertouserModel usertouserModel;
     String nfcotp;
 
+    ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_userto_user_s);
 
+        progressBar = findViewById(R.id.userUserSendProgressBar);
         otpTextView =findViewById(R.id.contact_otp);
         nric =findViewById(R.id.contact_NRIC);
         userPhoto =findViewById(R.id.contact_user_photo);
@@ -245,26 +249,23 @@ public class usertoUserS extends AppCompatActivity implements NfcAdapter.CreateN
             // 10. convert inputstream to string
             System.out.println("Print out the inputStream");
             System.out.println(inputStream);
-            if(inputStream != null) {
-                result = convertInputStreamToString(inputStream);
 
-                //get the otp value from the response
-                JsonElement root = new JsonParser().parse(result);
-                String success =root.getAsJsonObject().get("success").getAsString();
-                if (success.equals("true")) {
-                    String otp =root.getAsJsonObject().get("otp").getAsString();
-                    nfcotp =otp;
-                    otpTextView.setText(otp);
-                } else {
-//                    Toast.makeText(getBaseContext(), "Authentication failed", Toast.LENGTH_LONG).show();
-                    String reason =root.getAsJsonObject().get("reason").getAsString();
-                    System.out.println("This is the reason why it fails." +reason);
-                    otpTextView.setText(reason);
-                }
+            if(inputStream == null) {
+                return "Failed: Unknown Error";
             }
-            else
-                result = "Did not work!";
+            result = convertInputStreamToString(inputStream);
 
+            //get the otp value from the response
+            JsonElement root = new JsonParser().parse(result);
+            String success =root.getAsJsonObject().get("success").getAsString();
+            if (success.equals("true")) {
+                String otp =root.getAsJsonObject().get("otp").getAsString();
+                Log.d("userToUserR", "Got OTP: " + otp);
+                return otp;
+            } else {
+                return "Failed: " + root.getAsJsonObject().get("reason").getAsString();
+
+            }
         } catch (Exception e) {
             Log.d("InputStream", e.getLocalizedMessage());
         }
@@ -286,10 +287,13 @@ public class usertoUserS extends AppCompatActivity implements NfcAdapter.CreateN
         switch(view.getId()){
             case R.id.contact_submit_button:
                 if(!validate())
+
                     Toast.makeText(getBaseContext(), "Enter some data!", Toast.LENGTH_LONG).show();
                     // call AsynTask to perform network operation on separate thread
-                else
+                else {
+                    progressBar.setVisibility(View.VISIBLE);
                     new usertoUserS.HttpAsyncTask().execute("https://imme-195707.appspot.com/userUserAuth");
+                }
                 break;
         }
     }
@@ -307,12 +311,20 @@ public class usertoUserS extends AppCompatActivity implements NfcAdapter.CreateN
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-//            Toast.makeText(getBaseContext(), IdToken, Toast.LENGTH_LONG).show();
-//            Toast.makeText(getBaseContext(), webid.getText().toString(), Toast.LENGTH_LONG).show();
-//            Toast.makeText(getBaseContext(), imageString, Toast.LENGTH_LONG).show();
 
-            Toast.makeText(getBaseContext(), "Data Sent!", Toast.LENGTH_LONG).show();
-
+//           Log.d("usertoUserR", "onPostExecute " + result);
+            otpTextView.setVisibility(View.VISIBLE);
+            if (result.contains("Failed")) {
+                otpTextView.setText(result);
+                progressBar.setVisibility(View.GONE);
+                otpTextView.setTextColor(Color.RED);
+            }
+            else {
+                nfcotp = result;
+                otpTextView.setText(result);
+                progressBar.setVisibility(View.GONE);
+                otpTextView.setTextColor(Color.BLACK);
+            }
         }
     }
 

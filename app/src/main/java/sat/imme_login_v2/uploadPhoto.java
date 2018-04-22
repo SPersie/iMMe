@@ -3,6 +3,7 @@ package sat.imme_login_v2;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -42,12 +44,17 @@ public class uploadPhoto extends AppCompatActivity {
     ImageView photo1;
     ImageView photo2;
     ImageView photo3;
+    ImageView photo4;
+    ImageView photo5;
     ImageView[] images;
     Button submitPhoto;
     String photo1_String;
     String photo2_String;
     String photo3_String;
+    String photo4_String;
+    String photo5_String;
     FirebaseUser mUser;
+    ProgressBar progressBar;
 
     uploadphotoModel uploadphotoModel;
 
@@ -56,11 +63,15 @@ public class uploadPhoto extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_photo);
 
+        progressBar = findViewById(R.id.upload_photo_progress_bar);
+
         images =new ImageView[]{photo1, photo2, photo3};
 //        idToken =getIntent().getStringExtra("userID");
         photo1 =findViewById(R.id.photo_1);
         photo2 =findViewById(R.id.photo_2);
         photo3 =findViewById(R.id.photo_3);
+        photo4 =findViewById(R.id.photo_4);
+        photo5 =findViewById(R.id.photo_5);
         submitPhoto =findViewById(R.id.photo_submit_button);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         mUser.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
@@ -99,6 +110,24 @@ public class uploadPhoto extends AppCompatActivity {
                 Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                 cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
                 startActivityForResult(cameraIntent, 2);
+            }
+        });
+
+        photo4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+                startActivityForResult(cameraIntent, 3);
+            }
+        });
+
+        photo5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+                startActivityForResult(cameraIntent, 4);
             }
         });
 
@@ -143,6 +172,26 @@ public class uploadPhoto extends AppCompatActivity {
                 byte[] byteArray =byteArrayOutputStream.toByteArray();
                 photo3_String =Base64.encodeToString(byteArray, Base64.NO_WRAP);
             }
+        } else if (requestCode ==3) {
+            if (resultCode ==uploadPhoto.RESULT_OK) {
+                Bitmap photo =(Bitmap) data.getExtras().get("data");
+                photo4.setImageBitmap(photo);
+
+                ByteArrayOutputStream byteArrayOutputStream =new ByteArrayOutputStream();
+                photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                byte[] byteArray =byteArrayOutputStream.toByteArray();
+                photo4_String =Base64.encodeToString(byteArray, Base64.NO_WRAP);
+            }
+        } else if (requestCode ==4) {
+            if (resultCode ==uploadPhoto.RESULT_OK) {
+                Bitmap photo =(Bitmap) data.getExtras().get("data");
+                photo5.setImageBitmap(photo);
+
+                ByteArrayOutputStream byteArrayOutputStream =new ByteArrayOutputStream();
+                photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                byte[] byteArray =byteArrayOutputStream.toByteArray();
+                photo5_String =Base64.encodeToString(byteArray, Base64.NO_WRAP);
+            }
         }
     }
 
@@ -165,6 +214,9 @@ public class uploadPhoto extends AppCompatActivity {
             imageObject.accumulate("image1", uploadphotoModel.getPhoto1());
             imageObject.accumulate("image2", uploadphotoModel.getPhoto2());
             imageObject.accumulate("image3", uploadphotoModel.getPhoto3());
+            imageObject.accumulate("image4", uploadphotoModel.getPhoto4());
+            imageObject.accumulate("image5", uploadphotoModel.getPhoto5());
+
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.accumulate("idToken", uploadphotoModel.getIdToken());
@@ -194,26 +246,21 @@ public class uploadPhoto extends AppCompatActivity {
             inputStream = httpResponse.getEntity().getContent();
 
             // 10. convert inputstream to string
-            if(inputStream != null) {
-                result = convertInputStreamToString(inputStream);
 
-                //toast the reason if it fails
-                JsonElement root = new JsonParser().parse(result);
-                String success =root.getAsJsonObject().get("success").getAsString();
-
-                System.out.println(success +"This is a response from the server");
-                System.out.println(root.getAsJsonObject().get("reason").getAsString() +"This is the reason why fail.");
-                if (success.equals("true")) {
-//                    String otp =root.getAsJsonObject().get("otp").getAsString();
-                    Toast.makeText(uploadPhoto.this, "Your images have been uploaded.", Toast.LENGTH_LONG).show();
-                } else {
-                    String reason =root.getAsJsonObject().get("reason").getAsString();
-                    Toast.makeText(getBaseContext(), reason, Toast.LENGTH_LONG).show();
-                }
+            if(inputStream == null) {
+                return "Failed: Unknown Error";
             }
-            else
-                result = "Did not work!";
+            result = convertInputStreamToString(inputStream);
 
+            //get the otp value from the response
+            JsonElement root = new JsonParser().parse(result);
+            String success =root.getAsJsonObject().get("success").getAsString();
+            if (success.equals("true")) {
+                Log.d("uploadPhoto", "Photo uploaded ");
+                return "success";
+            } else {
+                return "Failed: " + root.getAsJsonObject().get("reason").getAsString();
+            }
         } catch (Exception e) {
             Log.d("InputStream", e.getLocalizedMessage());
         }
@@ -234,6 +281,7 @@ public class uploadPhoto extends AppCompatActivity {
     public void submit_Image(View view) {
         switch(view.getId()){
             case R.id.photo_submit_button:
+                progressBar.setVisibility(View.VISIBLE);
                 if(!validate())
                     Toast.makeText(getBaseContext(), "Enter some data!", Toast.LENGTH_LONG).show();
                     // call AsynTask to perform network operation on separate thread
@@ -252,17 +300,22 @@ public class uploadPhoto extends AppCompatActivity {
             uploadphotoModel.setPhoto1(photo1_String);
             uploadphotoModel.setPhoto2(photo2_String);
             uploadphotoModel.setPhoto3(photo3_String);
+            uploadphotoModel.setPhoto4(photo4_String);
+            uploadphotoModel.setPhoto5(photo5_String);
 
             return POST(urls[0],uploadphotoModel);
         }
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-//            Toast.makeText(getBaseContext(), IdToken, Toast.LENGTH_LONG).show();
-//            Toast.makeText(getBaseContext(), webid.getText().toString(), Toast.LENGTH_LONG).show();
-//            Toast.makeText(getBaseContext(), imageString, Toast.LENGTH_LONG).show();
-
-            Toast.makeText(getBaseContext(), "Data Sent!", Toast.LENGTH_LONG).show();
+            if (result.contains("Failed")) {
+                Toast.makeText(getBaseContext(), result, Toast.LENGTH_LONG).show();
+                progressBar.setVisibility(View.GONE);
+            }
+            else {
+                Toast.makeText(getBaseContext(), result, Toast.LENGTH_LONG).show();
+                progressBar.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -274,6 +327,10 @@ public class uploadPhoto extends AppCompatActivity {
         else if(photo2_String.equals(""))
             return false;
         else if(photo3_String.equals(""))
+            return false;
+        else if(photo4_String.equals(""))
+            return false;
+        else if(photo5_String.equals(""))
             return false;
         else
             return true;

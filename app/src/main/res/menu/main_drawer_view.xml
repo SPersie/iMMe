@@ -1,49 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item
-        android:id="@+id/user_user"
-        android:title="User to User (Sender)"
-        android:icon="@drawable/ic_edit"
-        />
-    <item
-        android:id="@+id/user_user_r"
-        android:title="User to User (Receiver)"
-        android:icon="@drawable/ic_edit"
-        />
-    <item
-        android:id="@+id/add_user_device"
-        android:title="Add Device"
-        android:icon="@drawable/ic_edit"
-        />
-    <item
-        android:id="@+id/user_device"
-        android:title="User to Device"
-        android:icon="@drawable/ic_edit"
-        />
 
-    <item
-        android:id="@+id/web_otp"
-        android:title="Web OTP"
-        android:icon="@drawable/ic_edit"
-        />
-    <item
-        android:id="@+id/verify_account"
-        android:title="Verify Account"
-        android:icon="@drawable/ic_edit"
-        />
-    <item
-        android:id="@+id/upload_photo"
-        android:title="Upload Photo"
-        android:icon="@drawable/ic_edit"
-        />
-    <item
-        android:id="@+id/updateinfo"
-        android:title="Update Info"
-        android:icon="@drawable/ic_edit"
-        />
-    <item
-        android:id="@+id/logout"
-        android:title="Logout"
-        android:icon="@drawable/ic_power"
-        />
+
+        <group android:checkableBehavior="none">
+                <item
+                    android:id="@+id/user_user"
+                    android:title="User to User (Sender)"
+                    android:icon="@drawable/ic_people_black_24dp"
+                    />
+                <item
+                    android:id="@+id/user_user_r"
+                    android:title="User to User (Receiver)"
+                    android:icon="@drawable/ic_call_made_black_24dp"
+                    />
+                <item
+                    android:id="@+id/user_device"
+                    android:title="User to Device"
+                    android:icon="@drawable/ic_nfc_black_24dp"
+                    />
+
+                <item
+                    android:id="@+id/add_user_device"
+                    android:title="Add Device"
+                    android:icon="@drawable/ic_add_to_queue_black_24dp"
+                    />
+                <item
+                    android:id="@+id/web_otp"
+                    android:title="Web OTP"
+                    android:icon="@drawable/ic_web_black_24dp"
+                    />
+                <item
+                    android:id="@+id/verify_account"
+                    android:title="Verify Account"
+                    android:icon="@drawable/ic_assignment_ind_black_24dp"
+                    />
+                <item
+                    android:id="@+id/upload_photo"
+                    android:title="Upload Photo"
+                    android:icon="@drawable/ic_face_black_24dp"
+                    />
+                <item
+                    android:id="@+id/updateinfo"
+                    android:title="Update Info"
+                    android:icon="@drawable/ic_edit"
+                    />
+                <item
+                    android:id="@+id/logout"
+                    android:title="Logout"
+                    android:icon="@drawable/ic_power"
+                    />
+        </group>
+
+
 </menu>

@@ -28,64 +28,67 @@
         android:textStyle="bold" />
 
     <RelativeLayout
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="131dp"
-        android:background="#fff"
-        android:orientation="vertical">
-
-        <ImageView
-            android:id="@+id/user_photo"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            app:srcCompat="@drawable/add_sign"
-            android:scaleType="centerCrop"/>
-    </RelativeLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:orientation="horizontal">
+        android:layout_below="@id/fa_title"
+        android:layout_centerHorizontal="true"
+        android:background="#FFF"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:elevation="4dp">
+        <ImageView
+            android:onClick="webotpcapture"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:id="@+id/user_photo"
+            app:srcCompat="@drawable/add_sign"
+            android:scaleType="centerCrop"
+            android:layout_centerHorizontal="true"/>
 
-        <Button
-            android:id="@+id/capture_button"
+        <TextView
+            android:id="@+id/otp"
             android:layout_width="wrap_content"
+            android:visibility="invisible"
+            android:layout_centerHorizontal="true"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="100dp"
-            android:text="Capture" />
+            android:text="Waiting for verification..."
+            android:textSize="20dp"
+            android:gravity="center"
+            android:layout_below="@id/user_photo"/>
+
+        <EditText
+            android:id="@+id/web_id"
+            android:layout_width="300dp"
+            android:hint="Enter WebID"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:layout_below="@id/otp"/>
 
         <Button
             android:id="@+id/submit_button"
+            android:layout_below="@id/web_id"
+            android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="50dp"
+            android:background="?attr/colorPrimary"
+            android:textColor="#FFF"
             android:text="Submit"
             android:onClick="submitJson"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
-    <EditText
-        android:id="@+id/web_id"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:textSize="26dp"
-        android:layout_marginBottom="156dp" />
-
-    <TextView
-        android:id="@+id/otp"
+    <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="86dp"
-        android:text="Waiting for verification..."
-        android:textSize="20dp" />
+        android:layout_centerInParent="true"
+        android:elevation="10dp"
+        android:visibility="gone"
+        android:id="@+id/webOTPProgressBar"/>
+
+
+
+
 
 </RelativeLayout>
