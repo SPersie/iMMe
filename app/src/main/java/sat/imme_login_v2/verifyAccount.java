@@ -56,6 +56,7 @@ public class verifyAccount extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verify_account);
 
+
         progressBar = findViewById(R.id.verify_account_ProgressBar);
         images =new ImageView[]{document, recentimage};
 //        idToken =getIntent().getStringExtra("userID");

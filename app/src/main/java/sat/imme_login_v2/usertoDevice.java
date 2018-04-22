@@ -232,6 +232,7 @@ public class usertoDevice extends AppCompatActivity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
+
             Log.d("userDevice", "onPostExecute " + result);
             if (result.contains("Failed")) {
                 Snackbar.make(userToDeviceLayout, result, Snackbar.LENGTH_LONG);
@@ -239,6 +240,7 @@ public class usertoDevice extends AppCompatActivity {
                 beam.setVisibility(View.GONE);
                 progressBar.setVisibility(View.GONE);
                 otpTextView.setTextColor(Color.RED);
+
             }
             else {
                 beam.setVisibility(View.VISIBLE);

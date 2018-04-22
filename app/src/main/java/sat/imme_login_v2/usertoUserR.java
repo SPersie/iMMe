@@ -69,12 +69,19 @@ public class usertoUserR extends AppCompatActivity implements NfcAdapter.CreateN
     private static final int MESSAGE_SENT = 1;
     private String Key="";
 
+    NfcAdapter mNfcAdapter;
+
+    private static final int MESSAGE_SENT = 1;
+    private String Key="";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_userto_user_r);
 
+
         progressBar = findViewById(R.id.user_receive_progress_bar);
+
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         otpTextView =findViewById(R.id.receive_otp);
         if (mNfcAdapter == null) {

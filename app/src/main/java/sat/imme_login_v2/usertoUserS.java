@@ -64,6 +64,7 @@ public class usertoUserS extends AppCompatActivity implements NfcAdapter.CreateN
     FirebaseUser mUser;
     usertouserModel usertouserModel;
     String nfcotp;
+
     ProgressBar progressBar;
 
     @Override
@@ -248,6 +249,7 @@ public class usertoUserS extends AppCompatActivity implements NfcAdapter.CreateN
             // 10. convert inputstream to string
             System.out.println("Print out the inputStream");
             System.out.println(inputStream);
+
             if(inputStream == null) {
                 return "Failed: Unknown Error";
             }
@@ -262,6 +264,7 @@ public class usertoUserS extends AppCompatActivity implements NfcAdapter.CreateN
                 return otp;
             } else {
                 return "Failed: " + root.getAsJsonObject().get("reason").getAsString();
+
             }
         } catch (Exception e) {
             Log.d("InputStream", e.getLocalizedMessage());
@@ -308,6 +311,7 @@ public class usertoUserS extends AppCompatActivity implements NfcAdapter.CreateN
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
+
 //           Log.d("usertoUserR", "onPostExecute " + result);
             otpTextView.setVisibility(View.VISIBLE);
             if (result.contains("Failed")) {
