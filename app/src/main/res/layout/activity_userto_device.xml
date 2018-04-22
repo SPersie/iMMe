@@ -16,6 +16,17 @@
         android:background="?attr/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
+
+    <ProgressBar
+        android:id="@+id/userDeviceProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
+
+
     <TextView
         android:layout_below="@id/fa_toolbar"
         android:id="@+id/fa_title"
@@ -66,15 +77,18 @@
             android:layout_centerHorizontal="true"
             android:hint="Device ID"
             android:layout_gravity="center"
+            android:gravity="center"
             android:layout_centerInParent="true"
-            android:textSize="26dp" />
+            android:textSize="20dp" />
 
 
 
         <Button
             android:id="@+id/getDeviceOtp"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
+            android:layout_width="wrap_content"
+            android:textColor="#FFF"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
             android:layout_centerInParent="true"
             android:layout_gravity="center"
             android:onClick="getDeviceOtp"
@@ -84,13 +98,15 @@
 
         <Button
             android:id="@+id/userDeviceBeam"
-            android:text="Beam OTP"
+            android:background="?attr/colorPrimary"
+            android:textColor="#FFF"
+            android:text="BEAM"
+            android:textStyle="bold"
             android:visibility="gone"
             android:onClick="userDeviceNFC"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/device_deviceId"
-            android:layout_marginStart="25dp"
             android:layout_toEndOf="@+id/getDeviceOtp" />
 
 
@@ -99,14 +115,6 @@
 
 
 
-
-    <ProgressBar
-        android:id="@+id/userDeviceProgress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:visibility="gone"/>
 
 
 

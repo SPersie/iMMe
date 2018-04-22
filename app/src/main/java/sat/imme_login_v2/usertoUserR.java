@@ -3,18 +3,28 @@ package sat.imme_login_v2;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcEvent;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.Time;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,8 +48,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
-public class usertoUserR extends AppCompatActivity {
+public class usertoUserR extends AppCompatActivity implements NfcAdapter.CreateNdefMessageCallback,
+        NfcAdapter.OnNdefPushCompleteCallback {
+
     private static final int CAMERA_REQUEST = 1888;
     EditText receiverOtp;
     ImageView userPhoto;
@@ -49,14 +62,28 @@ public class usertoUserR extends AppCompatActivity {
     String idToken;
     FirebaseUser mUser;
     usertoReceiverModel usertoReceiverModel;
+    ProgressBar progressBar;
+
+    NfcAdapter mNfcAdapter;
+
+    private static final int MESSAGE_SENT = 1;
+    private String Key="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_userto_user_r);
 
-        receiverOtp =findViewById(R.id.receiver_otp);
+        progressBar = findViewById(R.id.user_receive_progress_bar);
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         otpTextView =findViewById(R.id.receive_otp);
+        if (mNfcAdapter == null) {
+            otpTextView = (TextView)findViewById(R.id.nfc_textView);
+            otpTextView.setText("NFC is not available on this device.");
+        }
+
+        receiverOtp =findViewById(R.id.receiver_otp);
+
         submit =findViewById(R.id.receive_submit_button);
         userPhoto =findViewById(R.id.receive_user_photo);
 
@@ -88,6 +115,84 @@ public class usertoUserR extends AppCompatActivity {
         } else {
             Toast.makeText(usertoUserR.this, "not connected", Toast.LENGTH_LONG).show();
         }
+
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mNfcAdapter == null) {
+            otpTextView.setText("NFC is not available on this device.");
+        }
+        // Register callback to set NDEF message
+        mNfcAdapter.setNdefPushMessageCallback(this, this);
+        // Register callback to listen for message-sent success
+        mNfcAdapter.setOnNdefPushCompleteCallback(this, this);
+
+    }
+
+    /**
+     * Implementation for the CreateNdefMessageCallback interface
+     */
+    @Override
+    public NdefMessage createNdefMessage(NfcEvent event) {
+        NdefMessage msg = new NdefMessage(
+                new NdefRecord[] { createMimeRecord(
+                        "application/user_to_user.beam", Key.getBytes())
+
+                });
+        return msg;
+    }
+
+    public NdefRecord createMimeRecord(String mimeType, byte[] payload) {
+        byte[] mimeBytes = mimeType.getBytes(Charset.forName("US-ASCII"));
+        NdefRecord mimeRecord = new NdefRecord(
+                NdefRecord.TNF_MIME_MEDIA, mimeBytes, new byte[0], payload);
+        return mimeRecord;
+    }
+    /**
+     * Implementation for the OnNdefPushCompleteCallback interface
+     */
+    @Override
+    public void onNdefPushComplete(NfcEvent arg0) {
+        // A handler is needed to send messages to the activity when this
+        // callback occurs, because it happens from a binder thread
+        mHandler.obtainMessage(MESSAGE_SENT).sendToTarget();
+    }
+
+    /** This handler receives a message from onNdefPushComplete */
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_SENT:
+                    Toast.makeText(getApplicationContext(), "OTP sent!", Toast.LENGTH_LONG).show();
+                    break;
+            }
+        }
+    };
+
+    void processIntent(Intent intent) {
+        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(
+                NfcAdapter.EXTRA_NDEF_MESSAGES);
+        // only one message sent during the beam
+        NdefMessage msg = (NdefMessage) rawMsgs[0];
+        // record 0 contains the MIME type
+        String mKey = new String(msg.getRecords()[0].getPayload());
+        receiverOtp.setText(mKey);
+        Log.i("jinjing","set text");
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Check to see that the Activity started due to an Android Beam
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+            processIntent(getIntent());
+            Log.i("jinjing","processIntent");
+        }
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        // onResume gets called after this to handle the intent
+        setIntent(intent);
+        Log.i("jinjing","setIntent");
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -151,25 +256,19 @@ public class usertoUserR extends AppCompatActivity {
             // 10. convert inputstream to string
             System.out.println("Print our the inputStream");
             System.out.println(inputStream);
-            if(inputStream != null) {
-                result = convertInputStreamToString(inputStream);
-
-                //get the otp value from the response
-                JsonElement root = new JsonParser().parse(result);
-                String success =root.getAsJsonObject().get("success").getAsString();
-                if (success.equals("true")) {
-                    otpTextView.setText(success);
-                    System.out.println("lalalalalalalalalalllalal");
-                } else {
-//                    Toast.makeText(getBaseContext(), "Authentication failed", Toast.LENGTH_LONG).show();
-                    String reason =root.getAsJsonObject().get("reason").getAsString();
-                    System.out.println("This is the reason why it fails." +reason);
-                    otpTextView.setText(reason);
-                }
+            if(inputStream == null) {
+                return "Failed: Unknown Error";
             }
-            else
-                result = "Did not work!";
+            result = convertInputStreamToString(inputStream);
 
+            //get the otp value from the response
+            JsonElement root = new JsonParser().parse(result);
+            String success =root.getAsJsonObject().get("success").getAsString();
+            if (success.equals("true")) {
+                return success;
+            } else {
+                return "Failed: " + root.getAsJsonObject().get("reason").getAsString();
+            }
         } catch (Exception e) {
             Log.d("InputStream", e.getLocalizedMessage());
         }
@@ -193,11 +292,14 @@ public class usertoUserR extends AppCompatActivity {
                 if(!validate())
                     Toast.makeText(getBaseContext(), "Enter some data!", Toast.LENGTH_LONG).show();
                     // call AsynTask to perform network operation on separate thread
-                else
-                    new usertoUserR.HttpAsyncTask().execute("https://imme-195707.appspot.com/requestKey");
+                else {
+                    progressBar.setVisibility(View.VISIBLE);
+                    new usertoUserR.HttpAsyncTask().execute("https://imme-195707.appspot.com/checkKey");
+                }
                 break;
         }
     }
+
 
     private class HttpAsyncTask extends AsyncTask<String, Void, String> {
         @Override
@@ -212,11 +314,18 @@ public class usertoUserR extends AppCompatActivity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-//            Toast.makeText(getBaseContext(), IdToken, Toast.LENGTH_LONG).show();
-//            Toast.makeText(getBaseContext(), webid.getText().toString(), Toast.LENGTH_LONG).show();
-//            Toast.makeText(getBaseContext(), imageString, Toast.LENGTH_LONG).show();
-
-            Toast.makeText(getBaseContext(), "Data Sent!", Toast.LENGTH_LONG).show();
+//            Log.d("usertoUserR", "onPostExecute " + result);
+            otpTextView.setVisibility(View.VISIBLE);
+            if (result.contains("Failed")) {
+                otpTextView.setText(result);
+                progressBar.setVisibility(View.GONE);
+                otpTextView.setTextColor(Color.RED);
+            }
+            else {
+                otpTextView.setText(result);
+                progressBar.setVisibility(View.GONE);
+                otpTextView.setTextColor(Color.BLACK);
+            }
         }
     }
 

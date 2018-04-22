@@ -1,41 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
     android:background="#5fb0c9">
 
     <ProgressBar
+        android:id="@+id/verify_account_ProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
         android:elevation="10dp"
-        android:visibility="gone"
-        android:id="@+id/upload_photo_progress_bar"/>
-
-
-
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
 
 
     <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:scrollbarAlwaysDrawVerticalTrack="true">
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/fa_toolbar"
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
                 android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
+
+
 
             <TextView
                 android:layout_below="@id/toolbar"
@@ -45,7 +43,7 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginTop="22dp"
                 android:gravity="center_horizontal"
-                android:text="Upload Photo"
+                android:text="Verify Account"
                 android:textColor="#fff"
                 android:textSize="26sp"
                 android:textStyle="bold" />
@@ -55,7 +53,7 @@
                 android:layout_below="@+id/login_title"
                 android:layout_marginLeft="50dp"
                 android:layout_marginRight="50dp"
-                android:layout_marginBottom="40dp"
+                android:layout_marginBottom="30dp"
                 android:background="#fff"
                 android:elevation="4dp"
                 android:orientation="vertical"
@@ -65,14 +63,14 @@
                     android:id="@+id/mainuid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Picture 1"
+                    android:text="Document Photo"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:textStyle="bold"/>
 
                 <ImageView
                     android:layout_marginTop="10dp"
-                    android:id="@+id/photo_1"
+                    android:id="@+id/verify_doc"
                     android:layout_width="250dp"
                     android:layout_height="250dp"
                     android:layout_below="@+id/mainuid"
@@ -83,92 +81,37 @@
                     android:id="@+id/text_pic2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Picture 2"
+                    android:text="Recent Photo"
                     android:gravity="center"
                     android:textStyle="bold"
-                    android:layout_below="@+id/photo_1"
+                    android:layout_below="@+id/verify_doc"
                     android:layout_marginTop="10dp"/>
 
                 <ImageView
-                    android:id="@+id/photo_2"
+                    android:id="@+id/verify_image"
                     android:layout_width="250dp"
                     android:layout_height="250dp"
                     android:layout_below="@+id/text_pic2"
                     android:scaleType="centerCrop"
                     android:src="@drawable/add_sign"/>
 
-                <TextView
-                    android:id="@+id/text_pic3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Picture 3"
-                    android:gravity="center"
-                    android:textStyle="bold"
-                    android:layout_below="@+id/photo_2"
-                    android:layout_marginTop="10dp"/>
-
-                <ImageView
-                    android:id="@+id/photo_3"
-                    android:layout_width="250dp"
-                    android:layout_height="250dp"
-                    android:layout_below="@+id/text_pic3"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/add_sign"/>
-
-                <TextView
-                    android:id="@+id/text_pic4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Picture 4"
-                    android:gravity="center"
-                    android:textStyle="bold"
-                    android:layout_below="@+id/photo_3"
-                    android:layout_marginTop="10dp"/>
-
-                <ImageView
-                    android:id="@+id/photo_4"
-                    android:layout_width="250dp"
-                    android:layout_height="250dp"
-                    android:layout_below="@+id/text_pic4"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/add_sign"/>
-
-                <TextView
-                    android:id="@+id/text_pic5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Picture 5"
-                    android:gravity="center"
-                    android:textStyle="bold"
-                    android:layout_below="@+id/photo_4"
-                    android:layout_marginTop="10dp"/>
-
-                <ImageView
-                    android:id="@+id/photo_5"
-                    android:layout_width="250dp"
-                    android:layout_height="250dp"
-                    android:layout_below="@+id/text_pic5"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/add_sign"/>
-
                 <Button
-                    android:layout_marginTop="10dp"
-                    android:id="@+id/photo_submit_button"
+                    android:id="@+id/verify_submit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="?attr/colorPrimary"
-                    android:textColor="#FFF"
-                    android:layout_below="@+id/photo_5"
+                    android:layout_below="@+id/verify_image"
                     android:layout_centerHorizontal="true"
-                    android:text="Submit"
-                    android:textStyle="bold"
-                    android:onClick="submit_Image"/>
+                    android:layout_marginTop="10dp"
+                    android:background="?attr/colorPrimary"
+                    android:onClick="submit_Image"
+                    android:text="Verify"
+                    android:textColor="#FFF"
+                    android:textStyle="bold" />
             </RelativeLayout>
 
-        </LinearLayout>
+        </RelativeLayout>
 
     </ScrollView>
-
 
 
 
